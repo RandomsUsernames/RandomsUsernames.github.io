@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Chess Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            font-family: 'Courier Prime', monospace;
+        }
+        #board {
+            width: 400px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Local Chess Game (Human vs Human)</h1>
+    <div id="board"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script>
+        const game = new Chess();
+        const board = Chessboard('board', {
+            position: 'start',
+            draggable: true,
+            onDrop: (source, target) => {
+                const move = game.move({
+                    from: source,
+                    to: target,
+                    promotion: 'q'
+                });
+                if (move === null) return 'snapback';
+                board.position(game.fen());
+                if (game.isGameOver()) {
+                    if (game.inCheckmate()) alert(`Checkmate! ${game.turn() === 'w' ? 'Black' : 'White'} wins!`);
+                    else if (game.inDraw()) alert("It's a draw!");
+                }
+            },
+            pieceTheme: 'img/{piece}.png'
+        });
+    </script>
+</body>
+</html>

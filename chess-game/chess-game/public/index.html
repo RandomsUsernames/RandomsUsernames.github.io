@@ -1,0 +1,76 @@
+# Create directory structure
+mkdir -p chess-game/src/components chess-game/public
+
+# Create public/index.html
+cat > chess-game/public/index.html << 'EOL'
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <meta charset="utf-8" />
+   <title>Chess Game</title>
+ </head>
+ <body>
+   <div id="root"></div>
+ </body>
+</html>
+EOL
+
+# Create src/index.js
+cat > chess-game/src/index.js << 'EOL'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+EOL
+
+# Create src/App.js
+cat > chess-game/src/App.js << 'EOL'
+import ChessGame from './components/ChessGame';
+
+function App() {
+ return <ChessGame />;
+}
+
+export default App;
+EOL
+
+# Create src/index.css
+cat > chess-game/src/index.css << 'EOL'
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+EOL
+
+# Create src/components/ChessGame.js
+cat > chess-game/src/components/ChessGame.js << 'EOL'
+[Previous ChessGame.js code here]
+EOL
+
+# Create package.json
+cat > chess-game/package.json << 'EOL'
+{
+ "name": "chess-game",
+ "version": "1.0.0",
+ "dependencies": {
+   "react": "^18.2.0",
+   "react-dom": "^18.2.0",
+   "react-scripts": "^5.0.1",
+   "tailwindcss": "^3.3.0"
+ },
+ "scripts": {
+   "start": "react-scripts start",
+   "build": "react-scripts build"
+ },
+ "browserslist": {
+   "production": [">0.2%", "not dead", "not op_mini all"],
+   "development": ["last 1 chrome version"]
+ }
+}
+EOL
+
+cd chess-game
+npm install
+npm start
