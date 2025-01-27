@@ -3,181 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Gamemode</title>
+    <title>Chess Game</title>
+    <!-- React Dependencies -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
+        /* Burger Icon Styles */
+        .burger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 30px;
+            background: transparent;
+            cursor: pointer;
+            display: block;
+            z-index: 100;
+        }
+
+        .burger input {
+            display: none;
+        }
+
+        .burger span {
+            display: block;
+            position: absolute;
+            height: 4px;
+            width: 100%;
+            background: black;
+            border-radius: 9px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: .25s ease-in-out;
+        }
+
+        .burger span:nth-of-type(1) {
+            top: 0px;
+            transform-origin: left center;
+        }
+
+        .burger span:nth-of-type(2) {
+            top: 50%;
+            transform: translateY(-50%);
+            transform-origin: left center;
+        }
+
+        .burger span:nth-of-type(3) {
+            top: 100%;
+            transform-origin: left center;
+            transform: translateY(-100%);
+        }
+
+        .burger input:checked ~ span:nth-of-type(1) {
+            transform: rotate(45deg);
+            top: 0px;
+            left: 5px;
+        }
+
+        .burger input:checked ~ span:nth-of-type(2) {
+            width: 0%;
+            opacity: 0;
+        }
+
+        .burger input:checked ~ span:nth-of-type(3) {
+            transform: rotate(-45deg);
+            top: 28px;
+            left: 5px;
+        }
+
+        /* Updated Menu Card Styles */
+        .menu-card {
+            width: 240px;
+            height: 200px;
+            border-radius: 12px;
+            background: #ffffff;
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* New Animation */
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -20%);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        /* Blur Background */
+        .blur-background {
+            backdrop-filter: blur(5px);
+            position: fixed;
+            inset: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            background: #ffffff;
-            font-family: 'Courier Prime', monospace;
+            align-items: flex-start;
+            padding-top: 80px;
         }
-
-        .cards {
-            perspective: 500px;
-            position: relative;
-        }
-
-        .card {
-            width: 200px;
-            height: 250px;
-            background: #ffffff;
-            border: 2px solid #e0e0e0;
-            border-radius: 4px;
-            position: relative;
-            transform-style: preserve-3d;
-            will-change: transform;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            overflow: visible;
-        }
-
-        .card:hover {
-            transform: translateZ(10px) rotateX(20deg) rotateY(20deg);
-        }
-
-        .card_title {
-            color: #16161d;
-            position: absolute;
-            top: 40%;
-            left: 20px;
-            transform: translateY(-50%);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            font: 700 1.5rem monospace;
-            z-index: 2;
-        }
-
-        .card:hover .card_title {
-            transform: translateY(-50px) translateZ(50px);
-            font-size: 1.3rem;
-            opacity: 0.9;
-        }
-
-        /* Visible Arrow Styles */
-        .arrow {
-            cursor: pointer;
-            height: 60px;
-            position: absolute;
-            right: -70px;
-            top: 50%;
-            transform: translateY(-50%) scaleX(-1);
-            transition: transform 0.1s;
-            width: 50px;
-            z-index: 3;
-        }
-
-        .arrow-top, .arrow-bottom {
-            background-color: #666;
-            height: 4px;
-            right: -5px;
-            position: absolute;
-            top: 50%;
-            width: 100%;
-        }
-
-        .arrow-top:after, .arrow-bottom:after {
-            background-color: #ffffff;
-            content: "";
-            height: 100%;
-            position: absolute;
-            top: 0;
-            transition: all 0.15s;
-        }
-
-        .arrow-top {
-            transform: rotate(-45deg);
-            transform-origin: bottom left;
-        }
-
-        .arrow-top:after {
-            right: 100%;
-            left: 0;
-            transition-delay: 0s;
-        }
-
-        .arrow-bottom {
-            transform: rotate(45deg);
-            transform-origin: top left;
-        }
-
-        .arrow-bottom:after {
-            right: 0;
-            left: 100%;
-            transition-delay: 0.15s;
-        }
-
-        .arrow:hover .arrow-top:after {
-            right: 0;
-            transition-delay: 0.15s;
-        }
-
-        .arrow:hover .arrow-bottom:after {
-            left: 0;
-            transition-delay: 0s;
-        }
-
-        .arrow:active {
-            transform: translateY(-50%) scaleX(-1) scale(0.9);
-        }
-
-        /* Mode Options */
-        .mode-options {
-            position: absolute;
-            top: 100%;
-            left: 20px;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 3;
-            pointer-events: auto;
-        }
-
-        .card:hover .mode-options {
-            opacity: 1;
-            top: 50%;
-        }
-
-        .mode-text {
-            color: #16161d;
-            font: 700 1.1rem monospace;
-            display: block;
-            margin: 12px 0;
-            padding: 8px 15px;
-            border-radius: 4px;
-            background: rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            transform: translateY(20px);
-            opacity: 0;
-            width: 120px;
-            cursor: pointer;
-        }
-
-        .card:hover .mode-text {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .mode-text:hover {
-            background: rgba(0, 0, 0, 0.1);
-            transform: translateX(10px) !important;
-        }
-
-        .mode-text:nth-child(1) { transition-delay: 0.1s; }
-        .mode-text:nth-child(2) { transition-delay: 0.2s; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="cards">
-        <div class="card">
-            <span class="card_title">Gamemode</span>
-            <div class="arrow" onclick="window.history.back()"></div>
-            <div class="mode-options">
-                <div class="mode-text">AI</div>
-                <div class="mode-text" onclick="window.location.href='chess.html';">LOCAL</div>
-            </div>
-        </div>
-    </div>
+<body class="bg-white">
+    <div id="root" class="min-h-screen flex items-center justify-center"></div>
+
+    <script type="text/babel">
+        const initialBoard = [
+            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+            Array(8).fill(''),
+            Array(8).fill(''),
+            Array(8).fill(''),
+            Array(8).fill(''),
+            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+        ];
+
+        const ChessGame = () => {
+            const [board, setBoard] = React.useState(initialBoard);
+            const [selectedPiece, setSelectedPiece] = React.useState(null);
+            const [currentPlayer, setCurrentPlayer] = React.useState('white');
+            const [menuOpen, setMenuOpen] = React.useState(false);
+
+            const isValidMove = (from, to) => {
+                const [fromRow, fromCol] = from;
+                const [toRow, toCol] = to;
+                const piece = board[fromRow][fromCol];
+                const targetPiece = board[toRow][toCol];
+                
+                if (targetPiece !== '') {
+                    const isCurrentPlayerPiece = currentPlayer === 'white' ? 
+                        targetPiece === targetPiece.toUpperCase() : 
+                        targetPiece === targetPiece.toLowerCase();
+                    if (isCurrentPlayerPiece) return false;
+                }
+                return true;
+            };
+
+            const handleSquareClick = (row, col) => {
+                if (!selectedPiece) {
+                    const piece = board[row][col];
+                    if (!piece) return;
+                    
+                    const isPieceCurrentPlayer = currentPlayer === 'white' ? 
+                        piece === piece.toUpperCase() : 
+                        piece === piece.toLowerCase();
+                    
+                    if (isPieceCurrentPlayer) {
+                        setSelectedPiece([row, col]);
+                    }
+                } else {
+                    const [selectedRow, selectedCol] = selectedPiece;
+                    
+                    if (isValidMove(selectedPiece, [row, col])) {
+                        const newBoard = board.map(row => [...row]);
+                        newBoard[row][col] = board[selectedRow][selectedCol];
+                        newBoard[selectedRow][selectedCol] = '';
+                        
+                        setBoard(newBoard);
+                        setCurrentPlayer(currentPlayer === 'white' ? 'black' : 'white');
+                    }
+                    setSelectedPiece(null);
+                }
+            };
+
+            const getPieceSymbol = (piece) => {
+                const symbols = {
+                    'k': '♔', 'q': '♕', 'r': '♖', 'b': '♗', 'n': '♘', 'p': '♙',
+                    'K': '♚', 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞', 'P': '♟'
+                };
+                return symbols[piece] || '';
+            };
+
+            return (
+                <div className="relative">
+                    {/* Burger Icon */}
+                    <div className="burger" onClick={() => setMenuOpen(!menuOpen)}>
+                        <input type="checkbox" checked={menuOpen} readOnly />
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    {/* Chess Board */}
+                    <div className="flex flex-col items-center p-4 mt-12">
+                        <div className="mb-4 text-xl font-bold text-gray-700">
+                            {currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}'s Turn
+                        </div>
+                        <div className="overflow-hidden rounded-2xl shadow-lg bg-gray-300">
+                            <div className="grid grid-cols-8 gap-px">
+                                {board.map((row, rowIndex) => (
+                                    row.map((piece, colIndex) => {
+                                        const isSelected = selectedPiece && 
+                                            selectedPiece[0] === rowIndex && 
+                                            selectedPiece[1] === colIndex;
+                                        const isLight = (rowIndex + colIndex) % 2 === 0;
+                                        
+                                        return (
+                                            <div
+                                                key={`${rowIndex}-${colIndex}`}
+                                                className={`
+                                                    w-16 h-16 flex items-center justify-center text-4xl
+                                                    cursor-pointer transition-colors
+                                                    ${isLight ? 'bg-amber-100' : 'bg-amber-800'}
+                                                    ${isSelected ? '!bg-blue-300' : ''}
+                                                    hover:bg-blue-200
+                                                `}
+                                                onClick={() => handleSquareClick(rowIndex, colIndex)}
+                                            >
+                                                <span className={`${isLight ? 'text-gray-900' : 'text-amber-50'}`}>
+                                                    {getPieceSymbol(piece)}
+                                                </span>
+                                            </div>
+                                        );
+                                    })
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Updated Menu Card */}
+                    {menuOpen && (
+                        <div className="blur-background" onClick={() => setMenuOpen(false)}>
+                            <div className="menu-card" onClick={(e) => e.stopPropagation()}>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                                    Confirm Exit
+                                </h2>
+                                <div className="w-full flex flex-col gap-3 px-4">
+                                    <button 
+                                        className="w-full py-2.5 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                                        onClick={() => setMenuOpen(false)}>
+                                        Continue Playing
+                                    </button>
+                                    <button 
+                                        className="w-full py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                        onClick={() => window.location.href = 'gamemode.html'}>
+                                        Exit Game
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<ChessGame />, document.getElementById('root'));
+    </script>
 </body>
 </html>
